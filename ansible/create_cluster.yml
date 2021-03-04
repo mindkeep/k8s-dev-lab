@@ -1,0 +1,48 @@
+---
+- name: Common config
+  import_playbook: common_setup_tasks.yml
+
+- hosts: all
+  become: true
+  tasks:
+
+  - stat:
+      path: /etc/kubernetes/admin.conf
+    register: stat_result
+
+  - name: Clear stale join-command.sh (if needed)
+    become: false
+    local_action: file path="../work/join-command.sh" state=absent
+    when: stat_result.stat.exists == false
+
+  - name: Create Kubernetes Cluster
+    command:
+      cmd: kubeadm init --apiserver-advertise-address="{{node_ip}}" --apiserver-cert-extra-sans="{{node_ip}}" --pod-network-cidr=192.168.0.0/16
+      creates: /etc/kubernetes/admin.conf
+    register: kubernetes_create
+  - debug:
+      msg: "{{ kubernetes_create.stdout_lines }}"
+
+  - name: Copy Kubernetes admin.conf
+    fetch:
+      src: /etc/kubernetes/admin.conf
+      dest: ../work/kube.config
+      flat: yes
+
+  - name: Build Kuster Join command
+    shell:
+      cmd: kubeadm token create --ttl 0 --print-join-command > /vagrant/work/join-command.sh
+      creates: /vagrant/work/join-command.sh
+
+- name: Setup vagrant user
+  import_playbook: vagrant_kube_config.yml
+
+- hosts: all
+  become: false
+  tasks:
+  - name: Install Flannel CNI
+    command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml 
+    register: kubectl_cni
+    changed_when: '" created" in kubectl_cni.stdout'
+  - debug:
+      msg: "{{ kubectl_cni.stdout_lines }}"

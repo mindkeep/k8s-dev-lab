@@ -1,0 +1,23 @@
+---
+- hosts: all
+  become: true
+  tasks:
+
+  - name: Add vagrant user to docker group
+    user:
+      name: vagrant
+      group: docker
+
+  - name: set vagrant .kube dir
+    file:
+      path: /home/vagrant/.kube
+      state: directory
+      owner: vagrant
+      group: vagrant
+
+  - name: set vagrant .kube/config dir
+    copy:
+      src: ../work/kube.config
+      dest: /home/vagrant/.kube/config
+      owner: vagrant
+      group: vagrant
