@@ -3,13 +3,11 @@
 
 This repo is intended as laboratory for testing various kubernetes deployments.
 
-[[TOC]]
-
 ## Requirements
 
 vagrant
 virtualbox
-roughly 6G ram or the VMs
+roughly 6G ram (3 x 2G) for the VMs
 
 ## K8s Cluster setup
 
@@ -21,12 +19,20 @@ That's it! Hopefully...
 
 Vagrant will create the VMs via virtualbox and provision Kubernetes via ansible.
 
+This is likely to change in that vagrant up will just prime the nodes for use and I'll use ansible to apply whatever k8s implementations.
+
 ## Notes
 
 This creates 3 VMs by default.
 At the moment k8s-1 is the master node, and k8s-2 and k8s-3 are the workers. I'd like to change this so that all nodes are configured to be master/control-plane and schedulable.
 
 ## TODO
+
+* make all nodes control-plane and workers
+* seperate out ansible plays into more modular roles
+* maybe add redhat package management
+* seperate plays into k8s and rke installation (rke will likely be the default later, but starting with k8s)
+* add options for cni
 
 This is a pretty quick and dirty start that will hopefully grow a bit as I go.
 
