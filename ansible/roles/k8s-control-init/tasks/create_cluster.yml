@@ -1,11 +1,5 @@
 ---
-- name: Common config
-  import_playbook: common_setup_tasks.yml
-
-- hosts: all
-  become: true
-  tasks:
-
+- block:
   - stat:
       path: /etc/kubernetes/admin.conf
     register: stat_result
@@ -34,15 +28,11 @@
       cmd: kubeadm token create --ttl 0 --print-join-command > /vagrant/work/join-command.sh
       creates: /vagrant/work/join-command.sh
 
-- name: Setup vagrant user
-  import_playbook: vagrant_kube_config.yml
-
-- hosts: all
-  become: false
-  tasks:
   - name: Install Flannel CNI
-    command: kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml 
+    local_action: shell KUBECONFIG=../work/kube.config kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    become: false
     register: kubectl_cni
     changed_when: '" created" in kubectl_cni.stdout'
   - debug:
       msg: "{{ kubectl_cni.stdout_lines }}"
+  become: true

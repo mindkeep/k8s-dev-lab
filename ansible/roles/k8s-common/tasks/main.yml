@@ -1,0 +1,5 @@
+---
+# tasks file for k8s-common
+- block:
+  - include_tasks: kubernetes.yml
+  become: true

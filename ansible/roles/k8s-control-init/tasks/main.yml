@@ -1,0 +1,5 @@
+---
+# tasks file for k8s-control-init
+- block:
+  - include_tasks: create_cluster.yml
+  become: true

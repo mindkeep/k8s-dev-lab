@@ -1,0 +1,26 @@
+---
+- hosts: all
+  roles:
+  - k8s-common
+
+# First setup our init node as part of the control plane
+- hosts: k8s-1
+  roles:
+  - k8s-control-init
+
+# Stub to configure nodes to join the control plane
+- hosts: none
+  roles:
+  - k8s-control-join
+
+# Worker nodes to join the cluster
+- hosts:
+  - k8s-2
+  - k8s-3
+  roles:
+  - k8s-worker-join
+
+# This will allow all nodes to be schedulable. This could be tweaked or commented out based on needs
+- hosts: all
+  roles:
+  - k8s-worker

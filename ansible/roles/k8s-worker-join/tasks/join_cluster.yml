@@ -1,0 +1,8 @@
+---
+- name: Join node to cluster
+  command:
+    cmd: sh /vagrant/work/join-command.sh
+    creates: /etc/kubernetes/kubelet.conf
+  register: kubernetes_join
+- debug:
+    msg: "{{ kubernetes_join.stdout_lines }}"

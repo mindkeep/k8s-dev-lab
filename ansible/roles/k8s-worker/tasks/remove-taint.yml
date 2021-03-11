@@ -1,0 +1,7 @@
+---
+- name: Remove NoSchedule taint from worker
+  local_action: shell KUBECONFIG=../work/kube.config kubectl taint node {{hostname}} node-role.kubernetes.io/master:NoSchedule-
+  become: false
+  register: kubectl_rm_taint
+  changed_when: '" untainted" in kubectl_rm_taint.stdout'
+  failed_when: kubectl_rm_taint.rc >= 2

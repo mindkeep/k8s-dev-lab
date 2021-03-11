@@ -1,0 +1,5 @@
+---
+# tasks file for k8s-worker-join
+- block:
+  - include_tasks: join_cluster.yml
+  become: true
