@@ -24,3 +24,13 @@
 - hosts: all
   roles:
   - k8s-worker
+
+- hosts: localhost
+  tasks:
+  - name: Wait until k8s cluster is ready
+    command:
+      cmd: kubectl get nodes
+    register: kubectl
+    until: "'NotReady' not in kubectl.stdout"
+    retries: 15
+    delay: 2

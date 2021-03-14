@@ -4,9 +4,9 @@
     name: "{{ item }}"
     fstype: swap
     state: absent
-  with_items:
-    - swap
-    - none
+  loop:
+  - swap
+  - none
 
 - name: Disable swap
   command: swapoff -a

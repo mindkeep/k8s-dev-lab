@@ -1,0 +1,29 @@
+---
+- hosts: all
+  gather_facts: false
+  become: true
+  tasks:
+  - name: Reset Kubernetes config
+    command: kubeadm reset --force
+    ignore_errors: true
+
+  - name: Delete flannel.1 interface
+    command: ip link delete flannel.1
+    ignore_errors: true
+
+  - name: Delete cni0 interface
+    command: ip link delete cni0
+    ignore_errors: true
+
+  - name: Reset iptables
+    command: "{{item}}"
+    loop:
+    - iptables -F
+    - iptables -t nat -F
+    - iptables -t mangle -F
+    - iptables -X
+
+  - name: Clear CNI
+    file:
+      path: /etc/cni/net.d
+      state: absent

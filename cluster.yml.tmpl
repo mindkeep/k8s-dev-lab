@@ -1,0 +1,23 @@
+nodes:
+- address: 192.168.99.11
+  hostname_override: k8s-1
+  role:
+  - controlplane
+  - worker
+  - etcd
+  user: vagrant
+  ssh_key_path: .vagrant/machines/k8s-1/virtualbox/private_key
+- address: 192.168.99.12
+  hostname_override: k8s-2
+  role:
+  - worker
+  user: vagrant
+  ssh_key_path: .vagrant/machines/k8s-2/virtualbox/private_key
+- address: 192.168.99.13
+  hostname_override: k8s-3
+  role:
+  - worker
+  user: vagrant
+  ssh_key_path: .vagrant/machines/k8s-3/virtualbox/private_key
+network:
+  plugin: flannel

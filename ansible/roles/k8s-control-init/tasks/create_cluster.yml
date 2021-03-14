@@ -6,7 +6,10 @@
 
   - name: Clear stale join-command.sh (if needed)
     become: false
-    local_action: file path="../work/join-command.sh" state=absent
+    local_action:
+      module: file
+      path: ../work/join-command.sh
+      state: absent
     when: stat_result.stat.exists == false
 
   - name: Create Kubernetes Cluster
@@ -20,16 +23,28 @@
   - name: Copy Kubernetes admin.conf
     fetch:
       src: /etc/kubernetes/admin.conf
-      dest: ../work/kube.config
+      dest: ../kube_config_cluster.yml
       flat: yes
 
-  - name: Build Kuster Join command
+  - name: Build Worker join command
     shell:
       cmd: kubeadm token create --ttl 0 --print-join-command > /vagrant/work/join-command.sh
       creates: /vagrant/work/join-command.sh
 
+  - name: Retrieve join-command.sh contents
+    slurp:
+      src: /vagrant/work/join-command.sh
+    register: join_command
+
+  - name: Build Control-Plane join command
+    copy:
+      content: "{{ join_command['content'] | b64decode }} --control-plane"
+      dest: /vagrant/work/join-control-command.sh
+
   - name: Install Flannel CNI
-    local_action: shell KUBECONFIG=../work/kube.config kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+    local_action:
+      module: shell
+      cmd: KUBECONFIG=../kube_config_cluster.yml kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
     become: false
     register: kubectl_cni
     changed_when: '" created" in kubectl_cni.stdout'

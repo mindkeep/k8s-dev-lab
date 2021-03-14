@@ -9,30 +9,22 @@ vagrant
 virtualbox
 roughly 6G ram (3 x 2G) for the VMs
 
-## K8s Cluster setup
+## make targets
 
-...
+[usage](usage.md)
 
-~~vagrant up~~
-./scripts/setup_k8s.sh
-
-That's it! Hopefully...
-
-Vagrant will create the VMs via virtualbox.
-Ansible will provision Kubernetes.
-I separated these for more flexibility and to allow different configuration scenarios.
+Run either "make rke" or "make k8s" and you should be off to the races.
 
 ## Notes
 
-This creates 3 VMs by default.
-At the moment k8s-1 is the master node, and k8s-2 and k8s-3 are the workers. I'd like to change this so that all nodes are configured to be master/control-plane and schedulable.
+This creates 3 VMs by default. You can modify rke's cluster.yml to tweak settings, but for the moment vagrant only sets up 3 VMs.
+k8s-1 is the master node, and k8s-2 and k8s-3 are the workers. I'd like to change this so that all nodes are configured to be master/control-plane and schedulable.
 
 ## TODO
 
-* make all nodes control-plane and workers
+* make vagrant read cluster.yml to dynamically configure a different number of VMS.
 * maybe add redhat package management
-* seperate plays into k8s and rke installation (rke will likely be the default later, but starting with k8s)
-* add options for cni
+* add options for cni (rke has this, but k8s is hard coded to flannel)
 
 This is a pretty quick and dirty start that will hopefully grow a bit as I go.
 

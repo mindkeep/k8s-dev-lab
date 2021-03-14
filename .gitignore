@@ -1,3 +1,6 @@
 .vagrant/
-ubuntu-bionic-18.04-cloudimg-console.log
 work/
+*-console.log
+cluster.rkestate
+cluster.yml
+kube_config_cluster.yml
