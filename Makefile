@@ -51,14 +51,12 @@ clean_k8s:
 	ansible-playbook \
 	  -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
 	  ansible/clean_k8s.yml
-	rm $(ANSIBLE_CONFIG)
 
 rke_up: $(RKE_BINARY)
 	$(RKE_BINARY) up
 
 clean_rke: $(RKE_BINARY)
 	$(RKE_BINARY) remove --force
-	rm $(ANSIBLE_CONFIG)
 
 verify:
 	kubectl get nodes
