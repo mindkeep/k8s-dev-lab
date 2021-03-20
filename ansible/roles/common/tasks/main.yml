@@ -3,5 +3,4 @@
 - block:
   - include_tasks: swapoff.yml
   - include_tasks: docker.yml
-  - include_tasks: kubernetes.yml
   become: true

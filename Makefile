@@ -12,8 +12,9 @@ ANSIBLE_CONFIG = $(ROOT_DIR)/ansible/ansible.cfg
 WORK_DIR = $(ROOT_DIR)/work
 RKE_BINARY = $(WORK_DIR)/rke
 
-# I'd really like to make the _linux-amd64 more dynamic, but have yet to find the right command
-RKE_URL = https://github.com/rancher/rke/releases/latest/download/rke_linux-amd64
+OS = $(shell uname -s | tr A-Z a-z)
+RKE_ARCH = $(shell uname -m | sed -e s/x86_64/amd64/ -e s/armv8\*/arm64/ -e s/aarch64*/arm64/)
+RKE_URL = https://github.com/rancher/rke/releases/latest/download/rke_$(OS)-$(RKE_ARCH)
 
 export KUBECONFIG
 export ANSIBLE_CONFIG
@@ -36,12 +37,12 @@ init: $(CONFIG) $(WORK_DIR)
 vagrant_up: init
 	vagrant up
 
-ansible_common: vagrant_up
+ansible_common:
 	ansible-playbook \
 	  -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
 	  ansible/common.yml
 
-ansible_k8s: vagrant_up
+ansible_k8s:
 	ansible-playbook \
 	  -i .vagrant/provisioners/ansible/inventory/vagrant_ansible_inventory \
 	  ansible/build_k8s.yml
@@ -64,7 +65,7 @@ verify:
 	@echo
 	@echo All Done!
 	@echo
-	@echo Remember to \"export KUBECONFIG=$(shell pwd)/$(KUBECONFIG)\"
+	@echo Remember to \"export KUBECONFIG=$(KUBECONFIG)\"
 	@echo
 
 k8s: init vagrant_up ansible_k8s verify

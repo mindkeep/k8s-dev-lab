@@ -1,6 +1,10 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
+require 'yaml'
+
+cluster_yml = YAML.load_file("cluster.yml")
+
 Vagrant.configure("2") do |config|
 
   config.vm.box = "ubuntu/bionic64"
@@ -11,11 +15,12 @@ Vagrant.configure("2") do |config|
   # To work around this, we add to the hash and set it each time within
   # the provision step.
   host_vars = {}
+  nodes = cluster_yml['nodes']
 
-  N = 3
-  (1..N).each do |i|
-    hostname = "k8s-#{i}"
-    ip = "192.168.99.#{i + 10}"
+ nodes.each do |node_cfg|
+    #hostname = "wat"
+    hostname = node_cfg['hostname_override']
+    ip = node_cfg['address']
 
     config.vm.define hostname do |node|
       node.vm.hostname = hostname
