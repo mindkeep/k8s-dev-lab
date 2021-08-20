@@ -1,12 +1,12 @@
 ---
 - name: Add an apt signing key for Docker
   apt_key:
-    url: https://download.docker.com/linux/ubuntu/gpg
+    url: https://download.docker.com/linux/debian/gpg
     state: present
 
 - name: Add apt repository for Docker stable
   apt_repository:
-    repo: deb [arch=amd64] https://download.docker.com/linux/ubuntu xenial stable
+    repo: deb [arch=amd64] https://download.docker.com/linux/debian buster stable
     state: present
     filename: docker.list
     update_cache: no
@@ -26,3 +26,21 @@
   user:
     name: vagrant
     group: docker
+
+- local_action: stat path=/etc/docker/daemon.json
+  become: no
+  register: daemon_json_stat
+
+- name: Copy docker daemon config from localhost to target host
+  copy:
+    src: /etc/docker/daemon.json
+    dest: /etc/docker/daemon.json
+  when: daemon_json_stat.stat.exists == true and daemon_json_stat.stat.readable == true
+  register: docker_modified
+
+- name: Restart docker
+  service:
+    name: docker
+    daemon_reload: yes
+    state: restarted
+  when: docker_modified is changed

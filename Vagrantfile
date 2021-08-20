@@ -7,7 +7,10 @@ cluster_yml = YAML.load_file("cluster.yml")
 
 Vagrant.configure("2") do |config|
 
-  config.vm.box = "ubuntu/bionic64"
+  #config.vm.box = "ubuntu/bionic64"
+  config.vm.box = "generic/debian10"
+
+  config.vm.synced_folder ".", "/vagrant"
 
   # this is a bit of a hack
   # Vagrant doesn't seem smart enough to set host_vars for each generated

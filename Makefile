@@ -59,11 +59,12 @@ clean_rke: $(RKE_BINARY)
 	$(RKE_BINARY) remove --force
 
 verify:
+	@echo Updating KUBECONFIG with new context
+	cp ~/.kube/config ~/.kube/config.bak
+	KUBECONFIG=~/.kube/config.bak:$(KUBECONFIG) kubectl config view --flatten > ~/.kube/config
 	kubectl get nodes
 	@echo
 	@echo All Done!
-	@echo
-	@echo Remember to \"export KUBECONFIG=$(KUBECONFIG)\"
 	@echo
 
 k8s: init vagrant_up ansible_k8s verify
