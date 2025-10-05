@@ -1,0 +1,11 @@
+---
+- name: Ensure required apt packages for HTTPS
+  apt:
+    name:
+      - apt-transport-https
+      - ca-certificates
+      - curl
+      - gnupg
+      - lsb-release
+    state: present
+    update_cache: yes

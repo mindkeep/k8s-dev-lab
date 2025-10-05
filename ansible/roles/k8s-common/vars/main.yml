@@ -1,0 +1,10 @@
+
+k8s_version: "v1.34"
+k8s_url_apt_key: "https://pkgs.k8s.io/core:/stable:/{{ k8s_version }}/deb/Release.key"
+k8s_gpgpath: /etc/apt/keyrings/kubernetes-apt-keyring.gpg
+k8s_repository: "https://pkgs.k8s.io/core:/stable:/{{ k8s_version }}/deb/"
+
+cri_o_version: "{{ k8s_version }}"
+cri_o_url_apt_key: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ cri_o_version }}/deb/Release.key"
+cri_o_gpgpath: /etc/apt/keyrings/crio-apt-keyring.gpg
+cri_o_repository: "https://download.opensuse.org/repositories/isv:/cri-o:/stable:/{{ cri_o_version }}/deb/"

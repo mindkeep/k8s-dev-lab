@@ -1,0 +1,25 @@
+---
+- name: Ensure br_netfilter kernel module is loaded
+  modprobe:
+    name: br_netfilter
+    state: present
+
+- name: Ensure br_netfilter is persistent
+  lineinfile:
+    path: /etc/modules-load.d/k8s.conf
+    line: br_netfilter
+    create: yes
+
+- name: Ensure net.bridge.bridge-nf-call-iptables is set to 1
+  sysctl:
+    name: net.bridge.bridge-nf-call-iptables
+    value: '1'
+    state: present
+    reload: yes
+
+- name: Ensure net.ipv4.ip_forward is set to 1
+  sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    state: present
+    reload: yes

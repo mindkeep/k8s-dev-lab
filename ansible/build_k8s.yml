@@ -1,6 +1,7 @@
 ---
 - hosts: all
   roles:
+  - common
   - k8s-common
 
 # First setup our init node as part of the control plane

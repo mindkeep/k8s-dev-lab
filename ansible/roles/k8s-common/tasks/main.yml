@@ -1,5 +1,6 @@
 ---
 # tasks file for k8s-common
 - block:
+  - include_tasks: crio.yml
   - include_tasks: kubernetes.yml
   become: true

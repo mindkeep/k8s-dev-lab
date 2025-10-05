@@ -1,0 +1,25 @@
+---
+- name: Add an apt signing key for CRI-O
+  shell: curl -fsSL {{ cri_o_url_apt_key }} | gpg --dearmor -o {{ cri_o_gpgpath }}
+  args:
+    creates: "{{ cri_o_gpgpath }}"
+
+- name: Adding apt repository for CRI-O
+  apt_repository:
+    repo: "deb [signed-by={{ cri_o_gpgpath }}] {{ cri_o_repository }} /"
+    state: present
+    filename: crio.list
+    update_cache: yes
+
+- name: Install CRI-O package
+  apt:
+    name:
+      - cri-o
+    state: present
+    update_cache: yes
+
+- name: Enable and start CRI-O
+  service:
+    name: crio
+    state: started
+    enabled: yes
