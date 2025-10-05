@@ -39,16 +39,11 @@ leverage cluster.yml to make this more dynamic.
 
 ## TODO
 
+* add rke2 support as rke1 is being phased out.
 * update ansible k8s to read cluster.yml's roles and allow for variable VMS and configuration.
 * maybe add redhat package management
 * add support for different CNI's in k8s
 * add a k3s target/implementation
-
-This is a pretty quick and dirty start that will hopefully grow a bit as I go.
-
-This first cut used K8s, but RKE makes so much of this easy... My goal is to
-learn and evaluation different kubernetes implementations, so I'm going to try
-to get these somewhat feature comparable.
 
 ## Reference
 https://kubernetes.io/blog/2019/03/15/kubernetes-setup-using-ansible-and-vagrant/
