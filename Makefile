@@ -11,10 +11,14 @@ ANSIBLE_CONFIG = $(ROOT_DIR)/ansible/ansible.cfg
 
 WORK_DIR = $(ROOT_DIR)/work
 RKE_BINARY = $(WORK_DIR)/rke
+RKE2_BINARY = $(WORK_DIR)/rke2
 
 OS = $(shell uname -s | tr A-Z a-z)
 RKE_ARCH = $(shell uname -m | sed -e s/x86_64/amd64/ -e s/armv8\*/arm64/ -e s/aarch64*/arm64/)
+K3S_NAME = k3s  # TODO rename for other archs
 RKE_URL = https://github.com/rancher/rke/releases/latest/download/rke_$(OS)-$(RKE_ARCH)
+RKE2_URL = https://github.com/rancher/rke2/releases/latest/download/rke2.$(OS)-$(RKE_ARCH)
+K3S_URL = https://github.com/k3s-io/k3s/releases/latest/download/$(K3S_NAME)
 
 export KUBECONFIG
 export ANSIBLE_CONFIG
@@ -31,6 +35,14 @@ $(WORK_DIR):
 $(RKE_BINARY): $(WORK_DIR)
 	curl --output $(RKE_BINARY) --location $(RKE_URL)
 	chmod +x $(RKE_BINARY)
+
+$(RKE2_BINARY): $(WORK_DIR)
+	curl --output $(RKE2_BINARY) --location $(RKE2_URL)
+	chmod +x $(RKE2_BINARY)
+
+$(K3S_BINARY): $(WORK_DIR)
+	curl --output $(K3S_BINARY) --location $(K3S_URL)
+	chmod +x $(K3S_BINARY)
 
 init: $(CONFIG) $(WORK_DIR)
 
@@ -55,8 +67,14 @@ clean_k8s:
 rke_up: $(RKE_BINARY)
 	$(RKE_BINARY) up
 
+rke2_up: $(RKE2_BINARY)
+	$(RKE2_BINARY) up
+
 clean_rke: $(RKE_BINARY)
 	$(RKE_BINARY) remove --force
+
+clean_rke2: $(RKE2_BINARY)
+	$(RKE2_BINARY) remove --force
 
 verify:
 	@echo Updating KUBECONFIG with new context
@@ -70,6 +88,8 @@ verify:
 k8s: init vagrant_up ansible_k8s verify
 
 rke: init $(RKE_BINARY) vagrant_up ansible_common rke_up verify
+
+rke2: init $(RKE2_BINARY) vagrant_up ansible_common rke2_up verify
 
 clobber:
 	vagrant destroy -f
