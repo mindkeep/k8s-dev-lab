@@ -120,6 +120,19 @@ options:
 To find more, browse [Vagrant Cloud](https://portal.cloud.hashicorp.com/vagrant/discover)
 and confirm the box lists a **libvirt** provider before using it.
 
+#### Box architecture (Vagrant < 2.4)
+
+The `cloud-image/*` boxes are multi-arch (amd64 + arm64). Vagrant 2.4+ selects
+the right one automatically, but **older Vagrant (e.g. 2.3.x on Fedora) ignores
+the architecture field** and may fetch the arm64 build on an amd64 host — those
+VMs hang at "Booting from Hard Disk…" because the disk has no x86 bootloader.
+
+To avoid that, `make box` (run automatically by `make up`) resolves the correct
+build from Vagrant Cloud and pre-adds it. The architecture defaults to `amd64`;
+override with `make up BOX_ARCH=arm64` on an ARM host. If a box of the target
+name is already installed, `make box` leaves it alone — remove a wrong-arch box
+first with `vagrant box remove <name>`.
+
 ### Mixed-OS clusters (experimental)
 
 Kubespray detects each node's OS, so a heterogeneous cluster is possible. Give a
