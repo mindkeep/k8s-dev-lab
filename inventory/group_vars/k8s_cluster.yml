@@ -1,6 +1,15 @@
 kube_network_plugin: cilium
 container_manager: containerd
 
+# Own Kubernetes-managed dirs as root instead of the default `kube` user.
+# Cilium v1.19's init containers (mount-cgroup, install-cni-binaries) run as
+# root with DAC_OVERRIDE dropped, so they cannot write to /opt/cni/bin when it
+# is owned by `kube` (mode 0755) -- the agent pods fail with
+# "cp: cannot create regular file '/hostbin/cilium-mount': Permission denied".
+# Making these dirs root-owned lets the init containers write. The control
+# plane components run as root regardless, so this is safe.
+kube_owner: root
+
 # Allow workloads on control plane nodes
 kube_control_plane_node_taints: []
 

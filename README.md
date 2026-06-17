@@ -6,7 +6,7 @@ provisioning.
 
 Four VMs form a cluster where every node runs both the control plane and
 workloads (control plane nodes are untainted). Three of the four nodes host
-etcd. The default OS is Rocky Linux 10, but the box is configurable (see
+etcd. The default OS is Rocky Linux 9, but the box is configurable (see
 [Choosing a box](#choosing-a-box)).
 
 ## Requirements
@@ -89,7 +89,7 @@ three: `Vagrantfile`, `k8s-lab-net.xml`, and `inventory/hosts.yml`.
 
 ### Choosing a box
 
-The Vagrant box defaults to `cloud-image/rocky-10`. Override it per run:
+The Vagrant box defaults to `cloud-image/rocky-9`. Override it per run:
 
 ```
 make up BOX=cloud-image/debian-12
@@ -102,16 +102,22 @@ Use a **libvirt-native** box built from official cloud images — these have a
 hybrid boot layout that works under libvirt's SeaBIOS firmware. Verified
 options:
 
-| Box                        | OS              |
-|----------------------------|-----------------|
-| `cloud-image/rocky-10`     | Rocky Linux 10  |
-| `cloud-image/rocky-9`      | Rocky Linux 9   |
-| `cloud-image/almalinux-9`  | AlmaLinux 9     |
-| `cloud-image/debian-12`    | Debian 12       |
-| `cloud-image/ubuntu-24.04` | Ubuntu 24.04    |
+| Box                        | OS              | Status        |
+|----------------------------|-----------------|---------------|
+| `cloud-image/rocky-9`      | Rocky Linux 9   | default       |
+| `cloud-image/almalinux-9`  | AlmaLinux 9     | EL9, untested |
+| `cloud-image/debian-12`    | Debian 12       | boots + SSH   |
+| `cloud-image/ubuntu-24.04` | Ubuntu 24.04    | untested      |
+| `cloud-image/rocky-10`     | Rocky Linux 10  | experimental  |
 
-> If Rocky 10 gives Kubespray trouble (EL10 support is relatively new),
-> `cloud-image/rocky-9` is the safest bet.
+> **Rocky 10 is experimental in Kubespray and currently does not produce a
+> working cluster here.** The playbook completes, but the dataplane is broken:
+> kube-proxy's default IPVS mode fails because the `ipset` binary is missing,
+> Kubespray pulls a newer kernel than the running one (modules require a node
+> reboot), and Cilium's init container fails to install its host binaries.
+> Kubespray's own docs note the official Rocky 10 cloud image lacks
+> `kernel-module-extra` and recommend a custom image. Use Rocky 9 unless you
+> want to chase these down.
 >
 > Avoid the `generic/*` boxes from roboxes: they ship a GPT + BIOS-boot disk
 > layout that hangs SeaBIOS at "Booting from Hard Disk…" under recent
@@ -158,11 +164,22 @@ The default is set in the Makefile. Kubespray is cloned into `work/kubespray/`.
 
 Kubespray variables live in `inventory/group_vars/`:
 
-- `all.yml` — general settings (etcd deployment type, etc.)
-- `k8s_cluster.yml` — CNI plugin, container runtime, API server cert SANs
+- `all.yml` — general settings (etcd deployment type, remote Python interpreter)
+- `k8s_cluster.yml` — CNI plugin, container runtime, API server cert SANs,
+  `kube_owner`
 
 The full set of tunables is documented in Kubespray's
 [inventory/sample/group_vars](https://github.com/kubernetes-sigs/kubespray/tree/master/inventory/sample/group_vars).
+
+#### Cilium + `kube_owner`
+
+We set `kube_owner: root`. Cilium v1.19's init containers run as root with
+`DAC_OVERRIDE` dropped and cannot write to `/opt/cni/bin` when Kubespray creates
+it owned by the default `kube` user — the agents crash-loop with
+`cp: cannot create regular file '/hostbin/cilium-mount': Permission denied` and
+nodes never go `Ready`. Root-owning the dir fixes it; the control plane runs as
+root regardless. If you switch to Calico or Flannel, this override is harmless
+but no longer required.
 
 ## Layout
 

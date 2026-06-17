@@ -5,7 +5,7 @@
 # (the Makefile exports BOX), or set a per-node `box:` in NODES below for a
 # mixed-OS cluster. Use a libvirt-native box built from official cloud images;
 # see the README for recommendations.
-DEFAULT_BOX = ENV.fetch("BOX", "cloud-image/rocky-10")
+DEFAULT_BOX = ENV.fetch("BOX", "cloud-image/rocky-9")
 
 # Node definitions. The name/ip/mac here must stay in sync with
 # inventory/hosts.yml and the DHCP reservations in k8s-lab-net.xml.

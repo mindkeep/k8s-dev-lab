@@ -1,1 +1,7 @@
 etcd_deployment_type: host
+
+# Pin the remote Python interpreter. Ansible's auto-discovery (ansible-core
+# 2.18, shipped with Kubespray v2.31) maps EL10 to /usr/bin/python3.11, but
+# Rocky 10 ships only python3.12. Using the distro's python3 symlink is correct
+# across all supported boxes (Rocky 9/10, Debian 12, Fedora, Ubuntu).
+ansible_python_interpreter: /usr/bin/python3

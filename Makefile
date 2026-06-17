@@ -9,7 +9,7 @@ VENV = $(ROOT_DIR)/.venv
 KUBECONFIG_FILE = $(ROOT_DIR)/admin.conf
 
 # Vagrant box for the nodes. Override at the CLI: `make up BOX=cloud-image/debian-12`.
-BOX ?= cloud-image/rocky-10
+BOX ?= cloud-image/rocky-9
 # Box architecture. Vagrant < 2.4 ignores a box's architecture field and may
 # fetch the wrong build (e.g. arm64 on an amd64 host) for multi-arch boxes, so
 # we pin and pre-fetch it explicitly. See the `box` target.
