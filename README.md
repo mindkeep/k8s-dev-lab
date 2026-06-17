@@ -9,6 +9,9 @@ workloads (control plane nodes are untainted). Three of the four nodes host
 etcd. The default OS is Rocky Linux 9, but the box is configurable (see
 [Choosing a box](#choosing-a-box)).
 
+See [NOTES.md](NOTES.md) for a running log of key findings, gotchas, and the
+reasoning behind some of the configuration choices.
+
 ## Requirements
 
 - **vagrant** with the **vagrant-libvirt** plugin
@@ -186,6 +189,7 @@ but no longer required.
 ```
 Vagrantfile                 VM definitions (libvirt)
 Makefile                    Orchestration
+NOTES.md                    Running log of findings and gotchas
 k8s-lab-net.xml             libvirt network (NAT + DHCP reservations)
 inventory/
   hosts.yml.tmpl            Inventory template (tracked)
