@@ -1,6 +1,7 @@
 .vagrant/
 .venv/
 work/
+inventory/hosts.yml
 inventory/artifacts/
 admin.conf
 *.retry
