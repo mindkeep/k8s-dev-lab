@@ -1,0 +1,16 @@
+kube_network_plugin: cilium
+container_manager: containerd
+
+# Allow workloads on control plane nodes
+kube_control_plane_node_taints: []
+
+# Copy kubeconfig and kubectl to the ansible controller
+kubeconfig_localhost: true
+kubectl_localhost: true
+
+# Include node IPs in the API server cert for host-level kubectl access
+supplementary_addresses_in_ssl_cert:
+  - 192.168.56.11
+  - 192.168.56.12
+  - 192.168.56.13
+  - 192.168.56.14

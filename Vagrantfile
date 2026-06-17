@@ -1,52 +1,30 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require 'yaml'
-
-cluster_yml = YAML.load_file("cluster.yml")
+NODES = [
+  { name: "k8s-1", ip: "192.168.56.11", mac: "52:54:00:ab:01:01" },
+  { name: "k8s-2", ip: "192.168.56.12", mac: "52:54:00:ab:01:02" },
+  { name: "k8s-3", ip: "192.168.56.13", mac: "52:54:00:ab:01:03" },
+  { name: "k8s-4", ip: "192.168.56.14", mac: "52:54:00:ab:01:04" },
+]
 
 Vagrant.configure("2") do |config|
+  config.vm.box = "cloud-image/debian-12"
+  config.vm.synced_folder ".", "/vagrant", disabled: true
 
-  config.vm.box = "generic/debian12"
+  config.vm.provider :libvirt do |lv|
+    lv.cpus = 2
+    lv.memory = 2048
+    lv.management_network_name = "k8s-lab"
+    lv.management_network_address = "192.168.56.0/24"
+    lv.management_network_mode = "nat"
+  end
 
-  config.vm.synced_folder ".", "/vagrant"
-
-  # this is a bit of a hack
-  # Vagrant doesn't seem smart enough to set host_vars for each generated
-  # inventory line, it only retains the last nodes setting for all nodes.
-  # To work around this, we add to the hash and set it each time within
-  # the provision step.
-  host_vars = {}
-  nodes = cluster_yml['nodes']
-
- nodes.each do |node_cfg|
-    #hostname = "wat"
-    hostname = node_cfg['hostname_override']
-    ip = node_cfg['address']
-
-    config.vm.define hostname do |node|
-      node.vm.hostname = hostname
-      node.vm.network "private_network", ip: ip
-
-      config.vm.provider "virtualbox" do |vb|
-        vb.cpus = 2
-        vb.memory = 2048
-        vb.gui = false
-        # need to research these a bit more to understand impact, but it works
-        vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
-        vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
-      end
-
-      node.vm.provision "ansible" do |ansible|
-        # This is mostly a stub to set the host_vars, but helpful for newbies
-        ansible.playbook = "ansible/dump_facts.yml"
-        # add to global host_var and assign it to ansible hostvars each time
-        # to get these in the inventory file
-        host_vars[hostname] = {
-          "hostname" => hostname,
-          "node_ip" => ip
-        }
-        ansible.host_vars = host_vars
+  NODES.each do |node|
+    config.vm.define node[:name] do |n|
+      n.vm.hostname = node[:name]
+      n.vm.provider :libvirt do |lv|
+        lv.management_network_mac = node[:mac]
       end
     end
   end

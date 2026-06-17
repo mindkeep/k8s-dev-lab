@@ -1,3 +1,0 @@
----
-# tasks file for k8s-worker
-- include_tasks: remove-taint.yml

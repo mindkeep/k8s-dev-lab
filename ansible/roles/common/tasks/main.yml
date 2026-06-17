@@ -1,7 +1,0 @@
----
-# tasks file for common
-- block:
-  - include_tasks: packages.yml
-  - include_tasks: swapoff.yml
-  - include_tasks: kernel.yml
-  become: true

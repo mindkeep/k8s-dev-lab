@@ -1,0 +1,14 @@
+<network>
+  <name>k8s-lab</name>
+  <forward mode="nat"/>
+  <bridge name="virbr-k8s" zone="libvirt" stp="on" delay="0"/>
+  <ip address="192.168.56.1" netmask="255.255.255.0">
+    <dhcp>
+      <range start="192.168.56.100" end="192.168.56.200"/>
+      <host mac="52:54:00:ab:01:01" name="k8s-1" ip="192.168.56.11"/>
+      <host mac="52:54:00:ab:01:02" name="k8s-2" ip="192.168.56.12"/>
+      <host mac="52:54:00:ab:01:03" name="k8s-3" ip="192.168.56.13"/>
+      <host mac="52:54:00:ab:01:04" name="k8s-4" ip="192.168.56.14"/>
+    </dhcp>
+  </ip>
+</network>

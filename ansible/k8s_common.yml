@@ -1,5 +1,0 @@
----
-- hosts: all
-  roles:
-  - common
-  - k8s-common

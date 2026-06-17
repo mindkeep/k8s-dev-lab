@@ -1,6 +1,8 @@
 .vagrant/
+.venv/
 work/
+inventory/artifacts/
+admin.conf
+*.retry
 *-console.log
-cluster.rkestate
-cluster.yml
-kube_config_cluster.yml
+__pycache__/

@@ -1,9 +1,0 @@
----
-- hosts: all
-  tasks:
-  - debug:
-      var: ansible_facts
-  - debug:
-      var: hostname
-  - debug:
-      var: node_ip
