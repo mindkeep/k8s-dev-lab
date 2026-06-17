@@ -102,6 +102,9 @@ reset: $(VENV)/.kubespray-deps $(HOSTS)
 	  -e reset_confirmation=yes
 
 clobber:
-	vagrant destroy -f || true
-	-virsh net-destroy k8s-lab 2>/dev/null; virsh net-undefine k8s-lab 2>/dev/null; true
+	vagrant destroy -f 2>/dev/null; \
+	for dom in $(shell virsh list --all --name 2>/dev/null | grep '^k8s-dev-lab_'); do \
+	  virsh destroy "$$dom" 2>/dev/null; virsh undefine "$$dom" --remove-all-storage 2>/dev/null; \
+	done; true
+	virsh net-destroy k8s-lab 2>/dev/null; virsh net-undefine k8s-lab 2>/dev/null; true
 	rm -rf .vagrant .venv work $(KUBECONFIG_FILE) $(INVENTORY)/artifacts
